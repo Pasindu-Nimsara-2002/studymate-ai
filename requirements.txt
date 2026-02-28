@@ -4,5 +4,6 @@ pypdf
 faiss-cpu
 langchain
 langchain-community
-langchain-openai
-tiktoken
+langchain-huggingface
+langchain-google-genai
+sentence-transformers
