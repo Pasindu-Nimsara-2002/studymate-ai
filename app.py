@@ -1,7 +1,14 @@
 import os
 import streamlit as st
+from dotenv import load_dotenv
+
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+
+
+load_dotenv()
 
 st.set_page_config(
     page_title="StudyMate AI",
@@ -13,7 +20,7 @@ UPLOAD_DIR = "data/uploaded_pdfs"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 st.title("📚 StudyMate AI")
-st.write("Upload your lecture notes and ask questions using AI.")
+st.write("Upload your lecture notes and create a local FAISS vector database.")
 
 uploaded_file = st.file_uploader(
     "Upload a PDF file",
@@ -43,7 +50,29 @@ if uploaded_file is not None:
 
     st.write(f"Number of chunks created: {len(chunks)}")
 
-    with st.expander("Preview first chunk"):
-        if len(chunks) > 0:
-            st.write(chunks[0].page_content)
-            st.write(chunks[0].metadata)
+    with st.spinner("Creating local HuggingFace embeddings and FAISS vector store..."):
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            encode_kwargs={"normalize_embeddings": True}
+        )
+
+        vectorstore = FAISS.from_documents(chunks, embeddings)
+
+    st.success("FAISS vector store created successfully using local embeddings.")
+
+    query = st.text_input("Test retrieval: ask something from the PDF")
+
+    if query:
+        with st.spinner("Retrieving relevant chunks..."):
+            results = vectorstore.similarity_search(query, k=4)
+
+        st.subheader("Retrieved Chunks")
+
+        for i, doc in enumerate(results):
+            page_number = doc.metadata.get("page", "Unknown")
+
+            if isinstance(page_number, int):
+                page_number += 1
+
+            with st.expander(f"Chunk {i + 1} - Page {page_number}"):
+                st.write(doc.page_content)
