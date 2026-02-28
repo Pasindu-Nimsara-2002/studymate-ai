@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 st.set_page_config(
     page_title="StudyMate AI",
@@ -33,6 +34,16 @@ if uploaded_file is not None:
 
     st.write(f"Number of pages loaded: {len(documents)}")
 
-    with st.expander("Preview extracted text"):
-        if len(documents) > 0:
-            st.write(documents[0].page_content[:1000])
+    with st.spinner("Splitting text into chunks..."):
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200
+        )
+        chunks = text_splitter.split_documents(documents)
+
+    st.write(f"Number of chunks created: {len(chunks)}")
+
+    with st.expander("Preview first chunk"):
+        if len(chunks) > 0:
+            st.write(chunks[0].page_content)
+            st.write(chunks[0].metadata)
