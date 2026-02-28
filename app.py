@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+from langchain_community.document_loaders import PyPDFLoader
 
 st.set_page_config(
     page_title="StudyMate AI",
@@ -25,4 +26,13 @@ if uploaded_file is not None:
         file.write(uploaded_file.getbuffer())
 
     st.success(f"PDF uploaded successfully: {uploaded_file.name}")
-    st.write(f"Saved path: `{file_path}`")
+
+    with st.spinner("Reading PDF..."):
+        loader = PyPDFLoader(file_path)
+        documents = loader.load()
+
+    st.write(f"Number of pages loaded: {len(documents)}")
+
+    with st.expander("Preview extracted text"):
+        if len(documents) > 0:
+            st.write(documents[0].page_content[:1000])
