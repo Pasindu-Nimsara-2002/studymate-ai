@@ -39,6 +39,10 @@ os.makedirs("vectorstore", exist_ok=True)
 # -----------------------------
 google_api_key = os.getenv("GOOGLE_API_KEY")
 gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+embedding_model = os.getenv(
+    "GEMINI_EMBEDDING_MODEL",
+    "models/gemini-embedding-001"
+)
 
 if not google_api_key:
     st.error("GOOGLE_API_KEY is missing. Please add it to your .env file.")
@@ -136,7 +140,7 @@ if uploaded_files:
         # -----------------------------
         with st.spinner("Creating embeddings and FAISS vector store..."):
             embeddings = GoogleGenerativeAIEmbeddings(
-                model="models/gemini-embedding-001"
+                model=embedding_model
             )
 
             vectorstore = FAISS.from_documents(chunks, embeddings)
