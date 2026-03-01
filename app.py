@@ -3,7 +3,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_classic.chains import RetrievalQA
@@ -136,7 +136,7 @@ if uploaded_files:
         # -----------------------------
         with st.spinner("Creating embeddings and FAISS vector store..."):
             embeddings = GoogleGenerativeAIEmbeddings(
-                model="models/text-embedding-004"
+                model="models/gemini-embedding-001"
             )
 
             vectorstore = FAISS.from_documents(chunks, embeddings)
