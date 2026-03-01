@@ -147,15 +147,11 @@ streamlit run app.py
 
 ### Home Page
 
-Add screenshot here:
-
-`screenshots/home.png`
+![Home Page](screenshots/home.png)
 
 ### Answer with Sources
 
-Add screenshot here:
-
-`screenshots/answer_sources.png`
+![Answer with Sources](screenshots/answer_sources.png)
 
 ## Environment Variables
 
